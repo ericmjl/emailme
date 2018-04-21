@@ -12,7 +12,8 @@ import subprocess
 __version__ = '0.1.3'
 
 home = os.path.expanduser('~')
-credfile = os.path.join(home, '.credentials', 'emailme.json')
+creddir = os.path.join(home, '.credentials')
+credfile = os.path.join(creddir, 'emailme.json')
 
 @click.group()
 def sendmail():
@@ -84,6 +85,9 @@ def start():
     print(Fore.RESET + "This provides an extra layer of security for your account.")  # noqa: E501
     credentials['password'] = getpass(Fore.GREEN + 'What is your app-specific password?')  # noqa: E501
     print(Fore.CYAN + 'Creating credentials file...')
+    # Make credentials directory.
+    if not os.path.exists(creddir):
+        os.makedirs(creddir)
     with open(credfile, 'w+') as f:
         json.dump(credentials, f)
     subprocess.call(['chmod', '600', credfile])
