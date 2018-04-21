@@ -27,11 +27,11 @@ def send(subject, message):
     # app password.
     if not credentials_exist():
         create_credentials()
-    else:
-        usr, pw, hostname, host, port = read_credentials()
-        smtp = login(usr, pw, hostname, port)
-        msg = make_email(usr, host, subject, message)
-        smtp.send_message(msg)
+
+    usr, pw, hostname, host, port = read_credentials()
+    smtp = login(usr, pw, hostname, port)
+    msg = make_email(usr, host, subject, message)
+    smtp.send_message(msg)
 
 
 def make_email(username, host, subject, message):
@@ -47,7 +47,6 @@ def make_email(username, host, subject, message):
 
 
 def login(username, password, host, port):
-    print(username, host, password, port)
     s = smtplib.SMTP(host, port)
     s.starttls()
     s.login(username, password)
