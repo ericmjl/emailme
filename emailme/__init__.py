@@ -9,7 +9,7 @@ import click
 import subprocess
 
 
-__version__ = 0.1.2
+__version__ = '0.1.2'
 
 home = os.path.expanduser('~')
 credfile = os.path.join(home, '.credentials', 'emailme.json')
