@@ -1,6 +1,6 @@
 # emailme
 
-Super-simple emailing myself using Python code
+A Python module to email myself from Python scripts and the command line.
 
 # installation
 
