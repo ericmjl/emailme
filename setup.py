@@ -25,7 +25,7 @@ setup(name="emailme",
       keywords="email",
       url="http://github.com/ericmjl/emailme",
       package_data={'': ['README.md']},
-      install_requires=reqs,
+      install_requires=reqs,
       long_description=read('README.md'),
       entry_points={'console_scripts': ['emailme=emailme:cli']}
       )
