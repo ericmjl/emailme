@@ -26,5 +26,5 @@ setup(name="emailme",
       url="http://github.com/ericmjl/emailme",
       package_data={'': ['README.md']},
       long_description=read('README.md'),
-      entry_points={'console-scripts': ['emailme=emailme.send:cli']}
+      entry_points={'console_scripts': ['emailme=emailme:cli']}
       )
