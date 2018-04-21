@@ -16,7 +16,7 @@ def read(fname):
 
 
 setup(name="emailme",
-      version="0.1",
+      version="0.1.0",
       author="Eric J. Ma",
       author_email="ericmajinglong@gmail.com",
       description=("Super simple self-emailing."),
@@ -25,6 +25,7 @@ setup(name="emailme",
       keywords="email",
       url="http://github.com/ericmjl/emailme",
       package_data={'': ['README.md']},
+      install_requires=reqs,
       long_description=read('README.md'),
       entry_points={'console_scripts': ['emailme=emailme:cli']}
       )
