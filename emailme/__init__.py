@@ -9,7 +9,7 @@ import click
 import subprocess
 
 
-__version__ = '0.1.4'
+__version__ = '0.1.5'
 
 home = os.path.expanduser('~')
 creddir = os.path.join(home, '.credentials')
