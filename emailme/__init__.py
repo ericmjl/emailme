@@ -22,7 +22,8 @@ def sendmail():
 @sendmail.command()
 @click.option('--subject', help="The email subject.")
 @click.option('--message', help="The message to be sent.")
-def send(subject, message):
+@click.option('--to', help="Email address of person you're sending email to.")
+def send(subject, message, to=None):
     # If credential file doesn't exist, create it and prompt for username and
     # app password.
     if not credentials_exist():
@@ -30,18 +31,27 @@ def send(subject, message):
 
     usr, pw, hostname, host, port = read_credentials()
     smtp = login(usr, pw, hostname, port)
-    msg = make_email(usr, host, subject, message)
+    msg = make_email(usr, host, subject, message, to)
     smtp.send_message(msg)
 
 
-def make_email(username, host, subject, message):
+def make_email(username, host, subject, message, to=None):
     """
     Creates the email message to be sent.
+
+    :param str username: Email prefix (before @)
+    :param str host: Email suffix (after @)
+    :param str subject: Email subject.
+    :param str message: Email message.
+    :param str to: (optional) who to send email to.
     """
     msg = EmailMessage()
     msg.set_content(message)
     msg['Subject'] = subject
-    msg['To'] = f'{username}@{host}'
+    if to:
+        msg['To'] = to
+    else:
+        msg['To'] = f'{username}@{host}'
     msg['From'] = f'{username}@{host}'
     return msg
 
