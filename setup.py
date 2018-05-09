@@ -16,7 +16,7 @@ def read(fname):
 
 
 setup(name="emailme",
-      version="0.1.5",
+      version="0.2.0",
       author="Eric J. Ma",
       author_email="ericmajinglong@gmail.com",
       description=("Super simple self-emailing."),
