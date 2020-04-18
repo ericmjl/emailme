@@ -6,7 +6,7 @@ import os
 load_dotenv()
 
 """
-# Send Email to Eric J. Ma
+# Contact Eric Ma
 
 Hey, thanks for stopping by.
 
