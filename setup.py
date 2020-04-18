@@ -1,6 +1,6 @@
 import os
 
-from pip.req import parse_requirements
+from pip._internal.req import parse_requirements
 from setuptools import setup, find_packages
 
 install_reqs = parse_requirements('requirements.txt', session=False)

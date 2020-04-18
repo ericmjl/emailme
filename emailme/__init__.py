@@ -1,9 +1,11 @@
 import json
 import os
+from pathlib import Path
 import smtplib
 from email.message import EmailMessage
 from getpass import getpass
 from colorama import Fore
+from dotenv import load_dotenv
 
 import click
 import subprocess
@@ -11,48 +13,45 @@ import subprocess
 
 __version__ = '0.2.0'
 
-home = os.path.expanduser('~')
-creddir = os.path.join(home, '.credentials')
-credfile = os.path.join(creddir, 'emailme.json')
+load_dotenv()
 
-@click.group()
-def sendmail():
-    pass
+creddir = Path.home() / ".credentials"
+credfile = creddir / "emailme.json"
 
-@sendmail.command()
-@click.option('--subject', help="The email subject.")
-@click.option('--message', help="The message to be sent.")
-@click.option('--to', help="Email address of person you're sending email to.")
-def send(subject, message, to=None):
-    # If credential file doesn't exist, create it and prompt for username and
-    # app password.
-    if not credentials_exist():
-        create_credentials()
+# @click.group()
+# def sendmail():
+#     pass
 
+# @sendmail.command()
+# @click.option('--subject', help="The email subject.")
+# @click.option('--message', help="The message to be sent.")
+# @click.option('--to_email', help="Email address of person you're sending email to.")
+def send(subject, message, to_email=None, from_email=None):
+    """Send email!"""
     usr, pw, hostname, host, port = read_credentials()
     smtp = login(usr, pw, hostname, port)
-    msg = make_email(usr, host, subject, message, to)
+    msg = make_email(usr, host, subject, message, to_email, from_email)
     smtp.send_message(msg)
 
 
-def make_email(username, host, subject, message, to=None):
+def make_email(username, host, subject, message, to_email=None, from_email=None):
     """
     Creates the email message to be sent.
 
-    :param str username: Email prefix (before @)
-    :param str host: Email suffix (after @)
-    :param str subject: Email subject.
-    :param str message: Email message.
-    :param str to: (optional) who to send email to.
+    :param username: Email prefix (before @)
+    :param host: Email suffix (after @)
+    :param subject: Email subject.
+    :param message: Email message.
+    :param to_email: (optional) who to send email to.
+    :param from_email: (optional) the "from" field in the email.
     """
     msg = EmailMessage()
     msg.set_content(message)
     msg['Subject'] = subject
-    if to:
-        msg['To'] = to
-    else:
-        msg['To'] = f'{username}@{host}'
-    msg['From'] = f'{username}@{host}'
+    # Set "to" field
+    msg['To'] = to_email if to_email else f'{username}@{host}'
+    # Set "from" field.
+    msg['From'] = from_email if from_email else f'{username}@{host}'
     return msg
 
 
@@ -64,6 +63,40 @@ def login(username, password, host, port):
 
 
 def read_credentials():
+    """
+    Read credentials.
+
+    The order of priority for credentials is as follows:
+
+    1. Read environment for EMAILME_CONFIG string.
+    EMAILME_CONFIG should be of the form username:::password:::hostname:::host:::port.
+    Triple colons are used as a precaution,
+    in case there are colons inside the password.
+    1. Read in the credentials file from ~/.credentials/emailme.json
+    1. Raise an exception.
+    """
+    creds = read_environment()
+    if creds is not None:
+        return creds
+
+    creds = read_config()
+    if creds is not None:
+        return creds
+
+    raise Exception("Credential config not found! Please run init or set environment variables.")
+
+
+def read_environment():
+    """Load credentials from environment configuration."""
+    email_config = os.getenv("EMAILME_CONFIG", None)
+    if email_config is None:
+        return None
+    user, pw, hostname, host, port = email_config.split(":::")
+    return user, pw, hostname, host, port
+
+
+def read_config():
+    """Load credentials from config file."""
     with open(credfile, 'r+') as f:
         credentials = json.load(f)
     user = credentials['username']
@@ -73,13 +106,12 @@ def read_credentials():
     port = credentials['port']
     return user, pw, hostname, host, port
 
-
-@click.group()
+# @click.group()
 def init():
     pass
 
 
-@init.command()
+# @init.command()
 def start():
     credentials = dict()
     print(Fore.YELLOW + "Credential file not found. Let's create one.")
@@ -122,7 +154,7 @@ def parse_host(email):
 
 def credentials_exist():
     """
-    Returns a boolean of whether the 'emailme.json' credentials file exists.
+    Returns whether credentials exist or not.
     """
     if os.path.exists(credfile) and os.path.isfile(credfile):
         return True
@@ -131,8 +163,8 @@ def credentials_exist():
 
 
 
-cli = click.CommandCollection(sources=[sendmail, init])
+# cli = click.CommandCollection(sources=[sendmail, init])
 
 
-if __name__ == '__main__':
-    cli()
+# if __name__ == '__main__':
+#     cli()

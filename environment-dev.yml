@@ -4,6 +4,11 @@ channels:
 - conda-forge
 - ericmjl
 dependencies:
-- python=3.6
+- python=3.8
 - click
 - colorama
+- python-dotenv=0.13.0
+- black
+- pip
+- pip:
+  - streamlit
