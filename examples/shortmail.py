@@ -5,9 +5,18 @@ import os
 
 load_dotenv()
 
-"""
-# Contact Eric Ma
+# Load environment variables
+USER = os.getenv("EMAILME_FULL_NAME", None)
+EMAIL_MAX_LENGTH = os.getenv("EMAILME_MAX_LENGTH", 500)
 
+if USER is None:
+    raise NameError("Please configure your name with the environment variable `EMAILME_FULL_NAME`")
+
+f"""
+# Contact {USER}
+"""
+
+"""
 Hey, thanks for stopping by.
 
 I get a ton of email in my inbox,
@@ -52,15 +61,15 @@ reply_requested = st.radio(
     sorted(reply_sh.keys())
 )
 
-subject_text = st.text_input("Subject", value="Please be as specific as possible.")
+subject_input = st.text_input("Subject (please be as specific as possible)")
 
-subject = f"{subject} {subject_text} [{urgency_sh[urgency]}/{reply_sh[reply_requested]}]"
+subject_text = f"[{subject}] {subject_input} [{urgency_sh[urgency]}/{reply_sh[reply_requested]}]"
 
 message_text = st.text_area("Message")
-f"""You have used {len(message_text)}/500 characters."""
+f"""You have used {len(message_text)}/{EMAIL_MAX_LENGTH} characters."""
 
-if len(message_text) > 500:
-    st.error("You have exceeded the maximum message length, 500 characters. Please shorten your message.")
+if len(message_text) > EMAIL_MAX_LENGTH:
+    st.error(f"You have exceeded the maximum message length, {EMAIL_MAX_LENGTH} characters. Please shorten your message.")
 
 message = ""
 message += message_text
@@ -80,28 +89,30 @@ if add_bio:
     your_bio = st.text_area("Your bio")
     message += f"```\nSender Bio: {your_bio}\n```\n\n"
 
+message += f"Sent from: {your_name}, {from_email}"
 
-reviewed = st.checkbox("I have followed Eric's requests and I believe my email is valuable to him.")
+
+reviewed = st.checkbox(f"I have followed the requests above and I believe my email is valuable to {USER}.")
 if reviewed:
     """Here's a preview of the message you'll be sending."""
 
     f"""
-## Email Header
 
-From: {your_name}, {from_email}
+---------
 
-Subject: {subject}
+Subject: {subject_text}
 
-## Message
 
 {message}
+
+---------
 """
 
-if len(message_text) <= 500:
+if len(message_text) <= EMAIL_MAX_LENGTH:
     if st.button("Send email"):
         send(subject, message, to_email=os.getenv("EMAILME_TO_EMAIL"), from_email=from_email)
         st.success("Your message has been sent! Feel free to close this window.")
         st.balloons()
 
 else:
-    st.error("You have exceeded the maximum message length, 500 characters. Please shorten your message.")
+    st.error(f"You have exceeded the maximum message length, {EMAIL_MAX_LENGTH} characters. Please shorten your message.")

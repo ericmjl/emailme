@@ -27,5 +27,5 @@ setup(name="emailme",
       package_data={'': ['README.md']},
       install_requires=reqs,
       long_description=read('README.md'),
-      entry_points={'console_scripts': ['emailme=emailme:cli']}
+      entry_points={'console_scripts': ['emailme=emailme.cli:cli']}
       )
