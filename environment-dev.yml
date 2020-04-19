@@ -10,5 +10,6 @@ dependencies:
 - python-dotenv=0.13.0
 - black
 - pip
+- bumpversion
 - pip:
   - streamlit
