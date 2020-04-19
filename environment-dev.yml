@@ -11,5 +11,6 @@ dependencies:
 - black
 - pip
 - bumpversion
+- twine
 - pip:
   - streamlit
